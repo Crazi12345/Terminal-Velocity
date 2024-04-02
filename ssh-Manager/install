@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+mkdir ~/.local/bin/scripts
+cp ./save ~/.local/bin/scripts
+cp ./ssh-manager ~/.local/bin/
+~/.local/bin/ssh-manager encrypt

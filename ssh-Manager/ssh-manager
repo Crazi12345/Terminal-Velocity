@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+if [[ $# -eq 1 ]]; then
+    selected=$1
+    file=~/.local/bin/scripts/.saved_ssh_conf
+    if [ $selected == "add-connection" ]; then
+
+    ansible-vault decrypt $file
+       ~/.local/bin/scripts/save
+    ansible-vault encrypt $file
+    fi
+     if [ $selected == "encrypt" ]; then
+         touch $file
+    ansible-vault encrypt $file
+    fi
+      if [ $selected == "decrypt" ]; then
+    ansible-vault decrypt $file
+    fi
+    exit 0
+else
+    ansible-vault decrypt ~/.local/bin/scripts/.saved_ssh_conf --output ~/.local/bin/scripts/.remove
+    selected=$(cat ~/.local/bin/scripts/.remove | fzf)
+    rm ~/.local/bin/scripts/.remove
+    ssh $selected
+fi
+
+if [[ -z $selected ]]; then
+    exit 0
+fi
