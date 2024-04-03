@@ -19,7 +19,9 @@ if [[ $# -eq 1 ]]; then
     exit 0
 else
     ansible-vault decrypt ~/.local/bin/scripts/.saved_ssh_conf --output ~/.local/bin/scripts/.remove
-    selected=$(cat ~/.local/bin/scripts/.remove | fzf)
+    selected=$(cat ~/.local/bin/scripts/.remove |awk '{print $NF}'| fzf)
+    selected=$(cat ~/.local/bin/scripts/.remove | fzf --query=$selected --select-1 )
+    selected=$(echo "$selected" | awk '{ $NF=""; print }')
     rm ~/.local/bin/scripts/.remove
     ssh $selected
 fi

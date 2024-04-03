@@ -1,28 +1,46 @@
-#!/usr/bin/env python3
+#!/bin/env bash
 
-print("Please input the ip:")
-ip = input()
-ip = ip.strip()
-print("Input user, leave blank if none")
-user = input()
-user = user.strip()
-connection = None
-if user == None or user == "":
-        connection = ip
-else:
-    connection=user+"@"+ip
-print("does it need a private key to unlock? (y/n)")
-answer = input()
-answer = answer.strip()
-if answer.lower() == "n":
-    pass
-else:
-    print("please input the whole path to the key")
-    key = input()
-    key = key.strip()
-    connection = "-i "+ key+" "+connection
+# Input IP
+read -p "Please input the IP: " ip
+ip="${ip#"${ip%%[![:space:]]*}"}"  # Trim leading whitespace
+ip="${ip%"${ip##*[![:space:]]}"}"  # Trim trailing whitespace
 
-file = open("./.saved_ssh_conf", "a")
-file.write(connection)
+# Input user (optional)
+read -p "Input user, leave blank if none: " user
+user="${user#"${user%%[![:space:]]*}"}"
+user="${user%"${ip##*[![:space:]]}"}"
 
+if [[ -z "$user" ]]; then
+    connection="$ip"
+else
+    connection="$user@$ip"
+fi
+connection_nick=$connection
+# Private key path (optional)
+read -p "Does it need a private key to unlock? (y/n): " answer
+answer="${answer,,}"  # Convert to lowercase
+
+if [[ $answer == "y" ]]; then
+    read -p "Please input the whole path to the key: " key
+    key="${key#"${key%%[![:space:]]*}"}"
+    key="${key%"${ip##*[![:space:]]}"}"
+    connection="-i $key $connection"
+fi
+
+# Nickname (optional)
+read -p "Do you want to give it a nickname? (y/n): " answer
+answer="${answer,,}"
+
+if [[ $answer == "y" ]]; then
+    read -p "Please input the nickname (one word only): " nick
+    nick="${nick#"${nick%%[![:space:]]*}"}"
+    nick="${nick%"${ip##*[![:space:]]}"}"
+    connection="$connection $nick"
+else
+    connection=$connection_nick
+fi
+
+
+# Append to the config file
+echo "$connection" >> ~/.local/bin/scripts/.saved_ssh_conf
 
