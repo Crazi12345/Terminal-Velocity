@@ -19,11 +19,12 @@ connection_nick=$connection
 # Private key path (optional)
 read -p "Does it need a private key to unlock? (y/n): " answer
 answer="${answer,,}"  # Convert to lowercase
-
+conncetionFile=$answer
 if [[ $answer == "y" ]]; then
     read -p "Please input the whole path to the key: " key
     key="${key#"${key%%[![:space:]]*}"}"
     key="${key%"${ip##*[![:space:]]}"}"
+    connectionFile=" $connection -o $key "
     connection="-i $key $connection"
 fi
 
@@ -38,9 +39,12 @@ if [[ $answer == "y" ]]; then
     connection="$connection $nick"
 else
     connection=$connection_nick
+    connectionFile="$connectionFile $connection_nick"
 fi
 
 
 # Append to the config file
 echo "$connection" >> ~/.local/bin/scripts/.saved_ssh_conf
+echo "$connectionFile" >> ~/.local/bin/scripts/.saved_sshfs_conf
+
 
